@@ -25,7 +25,7 @@ class LocationUpdatesService : Service() {
     }
 
     private val mBinder = LocalBinder()
-    //private var mNotificationManager: NotificationManager? = null
+    private var mNotificationManager: NotificationManager? = null
     private var mLocationRequest: LocationRequest? = null
     private var mFusedLocationClient: FusedLocationProviderClient? = null
     private var mLocationCallback: LocationCallback? = null
@@ -96,15 +96,15 @@ class LocationUpdatesService : Service() {
         handlerThread.start()
         mServiceHandler = Handler(handlerThread.looper)
 
-        //mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //val name = "Application Name"
-            //val mChannel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW)
-            //mChannel.setSound(null, null)
-            //mNotificationManager!!.createNotificationChannel(mChannel)
-        //}
+        mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Application Name"
+            val mChannel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW)
+            mChannel.setSound(null, null)
+            mNotificationManager!!.createNotificationChannel(mChannel)
+        }
 
-        //startForeground(NOTIFICATION_ID, notification.build())
+        startForeground(NOTIFICATION_ID, notification.build())
 
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -133,8 +133,8 @@ class LocationUpdatesService : Service() {
     fun updateNotification() {
         //NOTIFICATION_TITLE = title
         //notification.setContentTitle(title)
-        //var notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        //notificationManager.notify(NOTIFICATION_ID, notification.build())
+        var notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, notification.build())
     }
 
     fun removeLocationUpdates() {
@@ -186,7 +186,7 @@ class LocationUpdatesService : Service() {
         try {
             mFusedLocationClient!!.removeLocationUpdates(mLocationCallback!!)
             Utils.setRequestingLocationUpdates(this, false)
-            //mNotificationManager!!.cancel(NOTIFICATION_ID)
+            mNotificationManager!!.cancel(NOTIFICATION_ID)
         } catch (unlikely: SecurityException) {
             Utils.setRequestingLocationUpdates(this, true)
         }
