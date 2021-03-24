@@ -17,19 +17,19 @@ public class SwiftBackgroundLocationPlugin: NSObject, FlutterPlugin, CLLocationM
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         SwiftBackgroundLocationPlugin.locationManager = CLLocationManager()
         SwiftBackgroundLocationPlugin.locationManager?.delegate = self
-        SwiftBackgroundLocationPlugin.locationManager?.requestAlwaysAuthorization()
-
-        SwiftBackgroundLocationPlugin.locationManager?.allowsBackgroundLocationUpdates = true
-        if #available(iOS 11.0, *) {
-            SwiftBackgroundLocationPlugin.locationManager?.showsBackgroundLocationIndicator = true;
-        }
-        SwiftBackgroundLocationPlugin.locationManager?.pausesLocationUpdatesAutomatically = false
 
         SwiftBackgroundLocationPlugin.channel?.invokeMethod("location", arguments: "method")
 
         if (call.method == "start_location_service") {
             SwiftBackgroundLocationPlugin.channel?.invokeMethod("location", arguments: "start_location_service")
             
+			SwiftBackgroundLocationPlugin.locationManager?.requestAlwaysAuthorization()
+			SwiftBackgroundLocationPlugin.locationManager?.allowsBackgroundLocationUpdates = true
+			if #available(iOS 11.0, *) {
+				SwiftBackgroundLocationPlugin.locationManager?.showsBackgroundLocationIndicator = false
+			}
+			SwiftBackgroundLocationPlugin.locationManager?.pausesLocationUpdatesAutomatically = false
+
             let args = call.arguments as? Dictionary<String, Any>
             let distanceFilter = args?["distance_filter"] as? Double
             SwiftBackgroundLocationPlugin.locationManager?.distanceFilter = distanceFilter ?? 0
